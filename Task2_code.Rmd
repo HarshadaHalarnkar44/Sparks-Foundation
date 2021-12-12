@@ -1,0 +1,67 @@
+---
+title: "Sparks Foundation Task 2"
+author: "Harshada Halarnkar"
+date: "08/12/2021"
+output: pdf_document
+---
+
+Software Tool: R Programming
+Method: K-means Clustering
+
+#Set the Path and display the data
+```{r}
+setwd("C:/Users/harsh/Desktop/GIM/Sparks Foundation")
+iris <- read.csv("Iris.csv",row.names = 1)
+View(iris)
+summary(iris)
+```
+
+#Creating a subset of the data
+```{r}
+library(cluster)
+library(factoextra)
+d1 <- subset(iris, select = -c(Species))
+View(d1)
+```
+
+#Using elbow method to find the optimal number of clusters
+```{r}
+number <- 1:10
+wss <- 1:10
+
+for (i in 1:10) 
+{
+  wss[i] <- kmeans(d1,i)$tot.withinss
+}
+
+plot(number,wss,type = "b", pch = 19)
+```
+
+#Using the optimal number of clusters to perform k-means clustering
+```{r}
+km <- kmeans(d1, 3)
+fviz_cluster(km, data = d1)
+str(km)
+```
+
+```{r}
+iris$cluster <- km$cluster
+View(iris)
+iris$New_Species <- ifelse(iris$Species == "Iris-setosa",3,ifelse(iris$Species == "Iris-versicolor",2,1))
+View(iris)
+```
+
+#Finding the accuracy
+```{r}
+count = 0
+for (i in 1:150)
+{
+  if(iris$New_Species[i]==iris$cluster[i])
+  {
+      count=count+1
+  }
+}
+count
+Accuracy = count/150 *100
+Accuracy
+```
